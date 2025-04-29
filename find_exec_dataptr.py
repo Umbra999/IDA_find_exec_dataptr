@@ -39,10 +39,12 @@ def main():
     print("[*] Scanning .data qwords for executable usage...")
 
     for qword_ea in get_data_qwords(data_seg.start_ea, data_seg.end_ea):
+        qword_name = idc.get_name(qword_ea) or "<unnamed>"
+
         for xref in idautils.XrefsTo(qword_ea):
             if is_executed_indirect_call_or_jmp(xref.frm, qword_ea):
                 func_name = idc.get_func_name(xref.frm)
-                print(f"[+] Qword at {qword_ea:#x} is EXECUTED via {idc.print_insn_mnem(xref.frm)} at {xref.frm:#x} in function '{func_name}'")
+                print(f"[+] Qword at {qword_ea:#x} ('{qword_name}') is EXECUTED via {idc.print_insn_mnem(xref.frm)} at {xref.frm:#x} in function '{func_name}'")
                 break  # Report once per qword
 
 if __name__ == "__main__":
